@@ -112,7 +112,11 @@ habitsRouter.patch('/reorder/all', (req, res) => {
 
   const activeIds = new Set(selectActiveHabitsOrdered.all().map((r) => r.id));
   const providedSet = new Set(orderedIds);
-  if (activeIds.size !== providedSet.size || [...activeIds].some((id) => !providedSet.has(id))) {
+  if (
+    orderedIds.length !== activeIds.size ||
+    activeIds.size !== providedSet.size ||
+    [...activeIds].some((id) => !providedSet.has(id))
+  ) {
     return res.status(400).json({ error: 'orderedIds must contain exactly the active habit ids.' });
   }
 

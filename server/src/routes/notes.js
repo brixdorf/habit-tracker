@@ -105,7 +105,11 @@ notesRouter.patch('/reorder/group', (req, res) => {
   const existingIds = selectGroupIds.all(month, pinned ? 1 : 0).map((r) => r.id);
   const existingSet = new Set(existingIds);
   const providedSet = new Set(orderedIds);
-  if (existingSet.size !== providedSet.size || [...existingSet].some((id) => !providedSet.has(id))) {
+  if (
+    orderedIds.length !== existingSet.size ||
+    existingSet.size !== providedSet.size ||
+    [...existingSet].some((id) => !providedSet.has(id))
+  ) {
     return res.status(400).json({ error: 'orderedIds must contain exactly the notes in this group.' });
   }
 
