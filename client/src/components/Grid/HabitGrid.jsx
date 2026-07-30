@@ -1,4 +1,3 @@
-import { useEffect, useState } from 'react';
 import {
   DndContext,
   PointerSensor,
@@ -25,15 +24,6 @@ export function HabitGrid({
 }) {
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }));
   const activeIds = habits.filter((h) => !h.archivedDate).map((h) => h.id);
-  const [localOrder, setLocalOrder] = useState(null);
-
-  useEffect(() => {
-    setLocalOrder(null);
-  }, [days]);
-
-  const orderedHabits = localOrder
-    ? localOrder.map((id) => habits.find((h) => h.id === id)).filter(Boolean)
-    : habits;
 
   function handleDragEnd(event) {
     const { active, over } = event;
@@ -50,8 +40,7 @@ export function HabitGrid({
     let activeCursor = 0;
     const nextOrder = fullOrder.map((id) => (activeIdSet.has(id) ? newActiveOrder[activeCursor++] : id));
 
-    setLocalOrder(nextOrder);
-    onReorder(newActiveOrder);
+    onReorder(nextOrder);
   }
 
   if (habits.length === 0) {
@@ -124,7 +113,7 @@ export function HabitGrid({
             </thead>
             <tbody>
               <SortableContext items={activeIds} strategy={verticalListSortingStrategy}>
-                {orderedHabits.map((habit) => (
+                {habits.map((habit) => (
                   <HabitRow
                     key={habit.id}
                     habit={habit}

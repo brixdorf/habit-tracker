@@ -115,12 +115,18 @@ export function Dashboard() {
     }
   }
 
-  async function handleReorder(orderedIds) {
+  async function handleReorder(fullOrderedIds) {
+    const previousHabits = habits;
+    const byId = new Map(habits.map((h) => [h.id, h]));
+    const reordered = fullOrderedIds.map((id) => byId.get(id)).filter(Boolean);
+    setHabits(reordered);
+
+    const activeOrderedIds = reordered.filter((h) => !h.archivedDate).map((h) => h.id);
     try {
-      await api.reorderHabits(orderedIds);
+      await api.reorderHabits(activeOrderedIds);
     } catch (e) {
       setError(e.message);
-      refresh(month);
+      setHabits(previousHabits);
     }
   }
 
