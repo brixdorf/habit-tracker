@@ -1,8 +1,7 @@
 const IST_OFFSET_MINUTES = 5 * 60 + 30;
 
 function toISTParts(date) {
-  const utcMs = date.getTime() + date.getTimezoneOffset() * 60000;
-  const istMs = utcMs + IST_OFFSET_MINUTES * 60000;
+  const istMs = date.getTime() + IST_OFFSET_MINUTES * 60000;
   return new Date(istMs);
 }
 
