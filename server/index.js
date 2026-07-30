@@ -1,4 +1,4 @@
-import 'dotenv/config';
+import dotenv from 'dotenv';
 import express from 'express';
 import session from 'express-session';
 import path from 'node:path';
@@ -14,6 +14,7 @@ import { importExportRouter } from './src/routes/importExport.js';
 import { metaRouter } from './src/routes/meta.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+dotenv.config({ path: path.join(__dirname, '..', '.env') });
 const isProduction = process.env.NODE_ENV === 'production';
 
 const app = express();
