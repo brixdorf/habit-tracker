@@ -165,11 +165,17 @@ export function Dashboard() {
   }
 
   async function handleReorderNotes(pinned, orderedIds) {
+    const previousNotes = notes;
+    const byId = new Map(notes.map((n) => [n.id, n]));
+    let cursor = 0;
+    const reordered = notes.map((n) => (n.pinned === pinned ? byId.get(orderedIds[cursor++]) : n));
+    setNotes(reordered);
+
     try {
       await api.reorderNotes(month, pinned, orderedIds);
     } catch (e) {
       setError(e.message);
-      refresh(month);
+      setNotes(previousNotes);
     }
   }
 
