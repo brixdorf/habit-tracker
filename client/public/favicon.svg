@@ -1,0 +1,5 @@
+<!-- Checkmark adapted from Lucide (lucide-static, ISC License) https://lucide.dev -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+  <circle cx="12" cy="12" r="11" fill="#3f7a5c" />
+  <path d="m6.5 12.5 3.5 3.5L18 8" fill="none" stroke="#f5f4f0" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" />
+</svg>

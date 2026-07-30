@@ -11,6 +11,7 @@ import { authRouter, requireAuth } from './src/routes/auth.js';
 import { habitsRouter } from './src/routes/habits.js';
 import { notesRouter } from './src/routes/notes.js';
 import { importExportRouter } from './src/routes/importExport.js';
+import { metaRouter } from './src/routes/meta.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const isProduction = process.env.NODE_ENV === 'production';
@@ -39,6 +40,7 @@ app.use('/api/auth', authRouter);
 app.use('/api/habits', requireAuth, habitsRouter);
 app.use('/api/notes', requireAuth, notesRouter);
 app.use('/api', requireAuth, importExportRouter);
+app.use('/api/meta', requireAuth, metaRouter);
 
 const clientDist = path.join(__dirname, '..', 'client', 'dist');
 if (fs.existsSync(clientDist)) {
