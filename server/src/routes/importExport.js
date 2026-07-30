@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { db } from '../db.js';
+import { todayIST } from '../dateUtils.js';
 
 export const importExportRouter = Router();
 
@@ -15,7 +16,7 @@ importExportRouter.get('/export', (req, res) => {
     notes: db.prepare('SELECT * FROM notes').all(),
   };
 
-  const filename = `habit-tracker-export-${new Date().toISOString().slice(0, 10)}.json`;
+  const filename = `habit-tracker-export-${todayIST()}.json`;
   res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
   res.setHeader('Content-Type', 'application/json');
   res.send(JSON.stringify(snapshot, null, 2));
