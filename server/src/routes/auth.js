@@ -25,7 +25,9 @@ authRouter.post('/login', loginLimiter, (req, res) => {
     return res.status(500).json({ error: 'Auth is not configured on the server.' });
   }
 
-  if (username !== expectedUsername || !bcrypt.compareSync(password, expectedHash)) {
+  const passwordMatches = bcrypt.compareSync(password, expectedHash);
+  const usernameMatches = username === expectedUsername;
+  if (!usernameMatches || !passwordMatches) {
     return res.status(401).json({ error: 'Invalid username or password.' });
   }
 
