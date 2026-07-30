@@ -226,7 +226,7 @@ export function Dashboard() {
       </main>
 
       {showCreateHabit && (
-        <HabitFormModal mode="create" initialGoal="20" onSubmit={handleCreateHabit} onClose={() => setShowCreateHabit(false)} />
+        <HabitFormModal mode="create" onSubmit={handleCreateHabit} onClose={() => setShowCreateHabit(false)} />
       )}
 
       {editingHabit && (
