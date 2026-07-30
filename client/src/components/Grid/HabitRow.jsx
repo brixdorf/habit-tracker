@@ -18,7 +18,10 @@ export function HabitRow({ habit, days, today, isCurrentMonth, sortable, ...cell
     <tr
       ref={setNodeRef}
       style={style}
-      className={isDragging ? 'relative z-30 bg-base-100 opacity-90 dark:bg-base-900' : archived ? 'opacity-70' : ''}
+      className={
+        'group ' +
+        (isDragging ? 'relative z-30 bg-base-100 opacity-90 dark:bg-base-900' : archived ? 'opacity-70' : '')
+      }
     >
       <HabitRowCells
         habit={habit}

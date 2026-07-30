@@ -87,7 +87,7 @@ export function HabitGrid({
         <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
           <table className="w-full table-fixed border-collapse text-sm">
             <colgroup>
-              <col className="w-32 sm:w-40" />
+              <col className="w-44" />
               {days.map((d) => (
                 <col key={d} className="w-8" />
               ))}
@@ -96,7 +96,7 @@ export function HabitGrid({
             </colgroup>
             <thead>
               <tr>
-                <th className="sticky left-0 z-20 w-32 border-b border-base-200 bg-base-100 px-2 py-2 text-left text-xs font-medium uppercase tracking-wide text-base-500 sm:w-40 dark:border-base-800 dark:bg-base-900 dark:text-base-400">
+                <th className="sticky left-0 z-20 w-44 border-b border-base-200 bg-base-100 px-2 py-2 text-left text-xs font-medium uppercase tracking-wide text-base-500 dark:border-base-800 dark:bg-base-900 dark:text-base-400">
                   Habit
                 </th>
                 {days.map((date) => {
