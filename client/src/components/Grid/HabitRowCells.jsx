@@ -94,7 +94,7 @@ export function HabitRowCells({
               }
             >
               {checked && (
-                <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                <svg viewBox="0 0 24 24" className="h-4 w-4 translate-x-px" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                   <path d="m5 13 4 4L19 7" />
                 </svg>
               )}
