@@ -1,6 +1,6 @@
 # Habit Tracker
 
-A single-user habit tracker web app. Track daily habits across months in a grid view, set monthly goals, archive habits you no longer track, and keep month-scoped notes. Built for one person to self-host, not a multi-tenant SaaS.
+A single-user habit tracker web app. Track daily habits across months in a grid view, set monthly goals, archive habits you no longer track, and keep month-scoped notes.
 
 ## Features
 
@@ -24,7 +24,7 @@ A single-user habit tracker web app. Track daily habits across months in a grid 
 Requires Node.js 20 or later.
 
 ```bash
-git clone <this-repo-url>
+git clone https://github.com/brixdorf/habit-tracker.git
 cd habit-tracker
 npm install
 ```
