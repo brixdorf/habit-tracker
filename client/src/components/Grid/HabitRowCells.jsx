@@ -83,7 +83,7 @@ export function HabitRowCells({
               aria-pressed={checked}
               style={checked ? { backgroundColor: habit.color } : undefined}
               className={
-                'flex h-7 w-7 items-center justify-center rounded transition ' +
+                'inline-flex h-7 w-7 items-center justify-center rounded transition ' +
                 (checked
                   ? editable
                     ? 'cursor-pointer'
