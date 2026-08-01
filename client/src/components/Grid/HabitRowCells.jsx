@@ -42,7 +42,7 @@ export function HabitRowCells({
   return (
     <>
       <td className="sticky left-0 z-10 w-44 border-b border-base-200 bg-base-50 px-2 py-1.5 dark:border-base-800 dark:bg-base-950">
-        <div className="flex items-center gap-1.5">
+        <div className="flex h-6 items-center gap-1.5">
           <DragHandle {...dragHandleProps} />
           <span
             className="h-2.5 w-2.5 shrink-0 rounded-full"
