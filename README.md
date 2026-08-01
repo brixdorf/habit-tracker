@@ -77,10 +77,12 @@ Required environment variables in production:
 
 The server refuses to start in production if `SESSION_SECRET` is missing, rather than falling back to an insecure default.
 
+The server also logs the resolved database path on startup (`Using SQLite database at ...`). Check your platform's runtime logs to confirm the exact path before configuring a volume mount, rather than guessing.
+
 ### Persistent storage
 
 Data is stored in a SQLite database at `server/data/habit-tracker.sqlite`. The database runs in WAL mode, which means there are also `-wal` and `-shm` sidecar files alongside it holding not-yet-checkpointed writes.
 
-If you're self-hosting this, mount `server/data` as a persistent volume, not just the `.sqlite` file on its own, or you risk losing recent writes on a container restart.
+If you're self-hosting this, mount `server/data` as a persistent volume, not just the `.sqlite` file on its own, or you risk losing recent writes on a container restart. The exact container path depends on how your platform structures the build. On a Railpack/Nixpacks-style builder (what Dokploy uses without a Dockerfile), the app root resolves to `/app`, so the path to mount is `/app/server/data`.
 
 The JSON export/import feature is the primary backup mechanism for this app. There is no automated backup job.
