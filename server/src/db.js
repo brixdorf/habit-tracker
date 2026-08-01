@@ -10,6 +10,7 @@ if (!fs.existsSync(dataDir)) {
 }
 
 const dbPath = path.join(dataDir, 'habit-tracker.sqlite');
+console.log(`Using SQLite database at ${dbPath}`);
 export const db = new Database(dbPath);
 
 db.pragma('journal_mode = WAL');
