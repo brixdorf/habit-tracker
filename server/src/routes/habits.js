@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { db } from '../db.js';
-import { todayIST, currentMonthIST } from '../dateUtils.js';
+import { todayIST, currentMonthIST, isValidMonth, isValidDate } from '../dateUtils.js';
 import { colorForIndex } from '../services/color.js';
 import { getHabitsForMonth, setGoalForMonth, selectHabitById, isDateEditable } from '../services/habits.js';
 
@@ -33,7 +33,7 @@ function isPositiveInt(v) {
 
 habitsRouter.get('/', (req, res) => {
   const month = req.query.month;
-  if (typeof month !== 'string' || !/^\d{4}-\d{2}$/.test(month)) {
+  if (!isValidMonth(month)) {
     return res.status(400).json({ error: 'Query param "month" (YYYY-MM) is required.' });
   }
   res.json(getHabitsForMonth(month));
@@ -134,8 +134,8 @@ habitsRouter.patch('/reorder/all', (req, res) => {
 habitsRouter.post('/:id/checks/:date/toggle', (req, res) => {
   const id = Number(req.params.id);
   const { date } = req.params;
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
-    return res.status(400).json({ error: 'date must be in YYYY-MM-DD format.' });
+  if (!isValidDate(date)) {
+    return res.status(400).json({ error: 'date must be a real date in YYYY-MM-DD format.' });
   }
 
   const habit = selectHabitById.get(id);

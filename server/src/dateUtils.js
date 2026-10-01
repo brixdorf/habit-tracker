@@ -55,3 +55,17 @@ export function compareDate(a, b) {
 export function dateMonth(dateStr) {
   return dateStr.slice(0, 7);
 }
+
+export function isValidMonth(monthStr) {
+  if (typeof monthStr !== 'string' || !/^\d{4}-\d{2}$/.test(monthStr)) return false;
+  const month = Number(monthStr.slice(5, 7));
+  return month >= 1 && month <= 12;
+}
+
+export function isValidDate(dateStr) {
+  if (typeof dateStr !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return false;
+  const monthStr = dateStr.slice(0, 7);
+  if (!isValidMonth(monthStr)) return false;
+  const day = Number(dateStr.slice(8, 10));
+  return day >= 1 && day <= daysInMonth(monthStr);
+}

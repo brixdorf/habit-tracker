@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { db } from '../db.js';
+import { isValidMonth } from '../dateUtils.js';
 
 export const notesRouter = Router();
 
@@ -27,7 +28,7 @@ function isNonEmptyString(v) {
 
 notesRouter.get('/', (req, res) => {
   const month = req.query.month;
-  if (typeof month !== 'string' || !/^\d{4}-\d{2}$/.test(month)) {
+  if (!isValidMonth(month)) {
     return res.status(400).json({ error: 'Query param "month" (YYYY-MM) is required.' });
   }
   const notes = selectNotesForMonth.all(month).map((n) => ({
@@ -43,7 +44,7 @@ notesRouter.get('/', (req, res) => {
 
 notesRouter.post('/', (req, res) => {
   const { month, content } = req.body ?? {};
-  if (typeof month !== 'string' || !/^\d{4}-\d{2}$/.test(month) || !isNonEmptyString(content)) {
+  if (!isValidMonth(month) || !isNonEmptyString(content)) {
     return res.status(400).json({ error: 'month (YYYY-MM) and content are required.' });
   }
 
