@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Logo } from '../components/common/Logo.jsx';
 import { ThemeToggle } from '../components/common/ThemeToggle.jsx';
 import { MonthNav } from '../components/common/MonthNav.jsx';
@@ -34,10 +34,22 @@ export function Dashboard() {
     });
   }, []);
 
+  // Only the newest refresh may update the screen, so a slow response for a month
+  // the user has already navigated away from can't overwrite the current one.
+  const latestRefresh = useRef(0);
+
   const refresh = useCallback((m) => {
     if (!m) return;
-    api.getHabits(m).then(setHabits).catch((e) => setError(e.message));
-    api.getNotes(m).then(setNotes).catch((e) => setError(e.message));
+    const requestId = ++latestRefresh.current;
+    const isLatest = () => requestId === latestRefresh.current;
+    api
+      .getHabits(m)
+      .then((data) => isLatest() && setHabits(data))
+      .catch((e) => isLatest() && setError(e.message));
+    api
+      .getNotes(m)
+      .then((data) => isLatest() && setNotes(data))
+      .catch((e) => isLatest() && setError(e.message));
   }, []);
 
   useEffect(() => {
