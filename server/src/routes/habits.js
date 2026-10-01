@@ -6,7 +6,9 @@ import { getHabitsForMonth, setGoalForMonth, selectHabitById, isDateEditable } f
 
 export const habitsRouter = Router();
 
-const countAllHabits = db.prepare('SELECT COUNT(*) AS count FROM habits');
+// AUTOINCREMENT ids are never reused, so the sequence counts every habit ever created.
+// Counting current rows instead would hand out a live habit's color again after a deletion.
+const habitSequence = db.prepare("SELECT seq FROM sqlite_sequence WHERE name = 'habits'");
 const maxPosition = db.prepare('SELECT MAX(position) AS maxPos FROM habits');
 const insertHabit = db.prepare(`
   INSERT INTO habits (name, color, position, created_date, archived_date, created_at)
@@ -44,8 +46,7 @@ habitsRouter.post('/', (req, res) => {
   }
 
   const trimmedName = name.trim();
-  const { count } = countAllHabits.get();
-  const color = colorForIndex(count);
+  const color = colorForIndex(habitSequence.get()?.seq ?? 0);
   const { maxPos } = maxPosition.get();
   const position = (maxPos ?? 0) + 1;
   const today = todayIST();
