@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState, useCallback } from 'react';
-import { api } from '../api.js';
+import { api, setUnauthorizedHandler } from '../api.js';
 
 const AuthContext = createContext(null);
 
@@ -13,6 +13,11 @@ export function AuthProvider({ children }) {
       .then((data) => setAuthenticated(data.authenticated))
       .catch(() => setAuthenticated(false))
       .finally(() => setLoading(false));
+  }, []);
+
+  useEffect(() => {
+    setUnauthorizedHandler(() => setAuthenticated(false));
+    return () => setUnauthorizedHandler(null);
   }, []);
 
   const login = useCallback(async (username, password) => {

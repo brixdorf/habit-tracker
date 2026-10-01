@@ -7,7 +7,25 @@ class ApiError extends Error {
   }
 }
 
-async function request(path, options = {}) {
+let unauthorizedHandler = null;
+
+// Lets the auth layer drop back to the login screen when the session expires mid-use.
+export function setUnauthorizedHandler(handler) {
+  unauthorizedHandler = handler;
+}
+
+async function toApiError(res) {
+  let message = `Request failed (${res.status})`;
+  try {
+    const data = await res.json();
+    if (data?.error) message = data.error;
+  } catch {
+    // ignore non-JSON error bodies
+  }
+  return new ApiError(message, res.status);
+}
+
+async function send(path, options = {}) {
   const res = await fetch(`${BASE}${path}`, {
     credentials: 'include',
     headers: options.body ? { 'Content-Type': 'application/json' } : undefined,
@@ -15,16 +33,14 @@ async function request(path, options = {}) {
   });
 
   if (!res.ok) {
-    let message = `Request failed (${res.status})`;
-    try {
-      const data = await res.json();
-      if (data?.error) message = data.error;
-    } catch {
-      // ignore non-JSON error bodies
-    }
-    throw new ApiError(message, res.status);
+    if (res.status === 401 && !path.startsWith('/auth/')) unauthorizedHandler?.();
+    throw await toApiError(res);
   }
+  return res;
+}
 
+async function request(path, options = {}) {
+  const res = await send(path, options);
   const contentType = res.headers.get('content-type') ?? '';
   if (contentType.includes('application/json')) {
     return res.json();
@@ -66,7 +82,8 @@ export const api = {
       body: JSON.stringify({ month, pinned, orderedIds }),
     }),
 
-  exportData: () => fetch(`${BASE}/export`, { credentials: 'include' }),
+  // Returns the raw response so the caller can save the body as a file.
+  exportData: () => send('/export'),
   importData: (snapshot) =>
     request('/import', { method: 'POST', body: JSON.stringify(snapshot) }),
 };

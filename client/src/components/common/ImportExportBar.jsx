@@ -8,7 +8,14 @@ export function ImportExportBar({ onImported }) {
   const [error, setError] = useState('');
 
   async function handleExport() {
-    const res = await api.exportData();
+    let res;
+    try {
+      res = await api.exportData();
+    } catch (err) {
+      setError(err.message || 'Export failed.');
+      return;
+    }
+    setError('');
     const blob = await res.blob();
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
