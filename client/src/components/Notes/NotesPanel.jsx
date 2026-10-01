@@ -16,6 +16,8 @@ export function NotesPanel({ notes, onCreate, onSave, onDelete, onTogglePin, onR
     try {
       await onCreate(trimmed);
       setDraft('');
+    } catch {
+      // The dashboard shows the error; keep the draft so the typed note isn't lost.
     } finally {
       setAdding(false);
     }

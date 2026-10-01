@@ -143,8 +143,13 @@ export function Dashboard() {
   }
 
   async function handleCreateNote(content) {
-    await api.createNote(month, content);
-    refresh(month);
+    try {
+      await api.createNote(month, content);
+      refresh(month);
+    } catch (e) {
+      setError(e.message);
+      throw e;
+    }
   }
 
   async function handleSaveNote(id, content) {
