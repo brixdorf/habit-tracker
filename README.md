@@ -6,11 +6,12 @@ A single-user habit tracker web app. Track daily habits across months in a grid 
 
 - Month-view grid with a row per habit and a column per day
 - Per-habit monthly goals with a live achieved count
+- Full Month habits, which only count a month as achieved when done every day the habit was active (from its creation day, through its archive day)
 - Archiving habits (one-way, keeps historical data, prorates the goal for the archive month)
 - Drag-and-drop reordering for habits and notes
 - Month-scoped notes with pinning and manual ordering
 - Full JSON export/import for backup and restore
-- Dark and light mode
+- Light and dark mode that follow the device setting live, with an optional fixed choice
 - All date logic runs in IST regardless of server or browser timezone
 
 ## Tech stack
