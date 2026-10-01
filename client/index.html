@@ -4,7 +4,22 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="light dark" />
     <title>Habit Tracker</title>
+    <script>
+      // Apply the theme before first paint so a dark device never flashes the light theme.
+      // Mirrors ThemeContext: a saved 'light'/'dark' wins, otherwise follow the device.
+      (function () {
+        var saved = null;
+        try {
+          saved = localStorage.getItem('habit-tracker-theme-preference');
+        } catch (e) {}
+        var dark =
+          saved === 'dark' ||
+          (saved !== 'light' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        if (dark) document.documentElement.classList.add('dark');
+      })();
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
