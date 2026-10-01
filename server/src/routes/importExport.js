@@ -31,6 +31,9 @@ importExportRouter.post('/import', (req, res) => {
   if (!isArray(snapshot.habits) || !isArray(snapshot.habitGoals) || !isArray(snapshot.checks) || !isArray(snapshot.notes)) {
     return res.status(400).json({ error: 'Invalid snapshot: expected habits, habitGoals, checks, notes arrays.' });
   }
+  if (snapshot.version !== EXPORT_VERSION) {
+    return res.status(400).json({ error: `Unsupported export version: expected ${EXPORT_VERSION}.` });
+  }
 
   const insertHabit = db.prepare(`
     INSERT INTO habits (id, name, color, position, created_date, archived_date, created_at)
