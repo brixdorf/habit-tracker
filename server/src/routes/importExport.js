@@ -40,7 +40,8 @@ importExportRouter.post('/import', (req, res) => {
     VALUES (@id, @name, @color, @position, @created_date, @archived_date, @created_at)
   `);
   const insertGoal = db.prepare(`
-    INSERT INTO habit_goals (id, habit_id, month, goal) VALUES (@id, @habit_id, @month, @goal)
+    INSERT INTO habit_goals (id, habit_id, month, goal, full_month)
+    VALUES (@id, @habit_id, @month, @goal, @full_month)
   `);
   const insertCheck = db.prepare(`
     INSERT INTO checks (id, habit_id, date) VALUES (@id, @habit_id, @date)
@@ -57,7 +58,8 @@ importExportRouter.post('/import', (req, res) => {
     db.prepare('DELETE FROM habits').run();
 
     for (const habit of snapshot.habits) insertHabit.run(habit);
-    for (const goal of snapshot.habitGoals) insertGoal.run(goal);
+    // Backups from before Full Month existed have no full_month; those months had it off.
+    for (const goal of snapshot.habitGoals) insertGoal.run({ ...goal, full_month: goal.full_month ? 1 : 0 });
     for (const check of snapshot.checks) insertCheck.run(check);
     for (const note of snapshot.notes) insertNote.run(note);
   });

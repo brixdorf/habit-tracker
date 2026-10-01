@@ -39,6 +39,7 @@ db.exec(`
     habit_id INTEGER NOT NULL REFERENCES habits(id) ON DELETE CASCADE,
     month TEXT NOT NULL,
     goal INTEGER NOT NULL,
+    full_month INTEGER NOT NULL DEFAULT 0,
     UNIQUE(habit_id, month)
   );
 
@@ -68,3 +69,9 @@ db.exec(`
   CREATE INDEX IF NOT EXISTS idx_checks_habit_date ON checks(habit_id, date);
   CREATE INDEX IF NOT EXISTS idx_notes_month ON notes(month);
 `);
+
+// Databases created before Full Month existed lack the column; add it with the feature off.
+const goalColumns = db.prepare('PRAGMA table_info(habit_goals)').all().map((c) => c.name);
+if (!goalColumns.includes('full_month')) {
+  db.exec('ALTER TABLE habit_goals ADD COLUMN full_month INTEGER NOT NULL DEFAULT 0');
+}

@@ -1,8 +1,8 @@
 import { Router } from 'express';
 import { db } from '../db.js';
-import { todayIST, currentMonthIST, isValidMonth, isValidDate } from '../dateUtils.js';
+import { todayIST, currentMonthIST, daysInMonth, isValidMonth, isValidDate } from '../dateUtils.js';
 import { colorForIndex } from '../services/color.js';
-import { getHabitsForMonth, setGoalForMonth, selectHabitById, isDateEditable } from '../services/habits.js';
+import { getHabitsForMonth, setTargetForMonth, selectHabitById, isDateEditable } from '../services/habits.js';
 
 export const habitsRouter = Router();
 
@@ -14,7 +14,9 @@ const insertHabit = db.prepare(`
   INSERT INTO habits (name, color, position, created_date, archived_date, created_at)
   VALUES (?, ?, ?, ?, NULL, ?)
 `);
-const insertGoal = db.prepare('INSERT INTO habit_goals (habit_id, month, goal) VALUES (?, ?, ?)');
+const insertGoal = db.prepare(
+  'INSERT INTO habit_goals (habit_id, month, goal, full_month) VALUES (?, ?, ?, ?)'
+);
 const updateHabitName = db.prepare('UPDATE habits SET name = ? WHERE id = ?');
 const archiveHabit = db.prepare('UPDATE habits SET archived_date = ? WHERE id = ?');
 const deleteHabit = db.prepare('DELETE FROM habits WHERE id = ?');
@@ -40,8 +42,13 @@ habitsRouter.get('/', (req, res) => {
 });
 
 habitsRouter.post('/', (req, res) => {
-  const { name, goal } = req.body ?? {};
-  if (!isNonEmptyString(name) || !isPositiveInt(goal)) {
+  const { name, goal, fullMonth = false } = req.body ?? {};
+  if (typeof fullMonth !== 'boolean') {
+    return res.status(400).json({ error: 'fullMonth must be a boolean.' });
+  }
+  // A Full Month habit doesn't need a numeric goal; one is still kept for if it's turned off.
+  const goalRequired = !fullMonth || goal !== undefined;
+  if (!isNonEmptyString(name) || (goalRequired && !isPositiveInt(goal))) {
     return res.status(400).json({ error: 'name (string) and goal (positive integer) are required.' });
   }
 
@@ -51,10 +58,11 @@ habitsRouter.post('/', (req, res) => {
   const position = (maxPos ?? 0) + 1;
   const today = todayIST();
   const month = currentMonthIST();
+  const storedGoal = goal ?? daysInMonth(month);
 
   const createTx = db.transaction(() => {
     const info = insertHabit.run(trimmedName, color, position, today, Date.now());
-    insertGoal.run(info.lastInsertRowid, month, goal);
+    insertGoal.run(info.lastInsertRowid, month, storedGoal, fullMonth ? 1 : 0);
     return info.lastInsertRowid;
   });
 
@@ -67,7 +75,7 @@ habitsRouter.patch('/:id', (req, res) => {
   const habit = selectHabitById.get(id);
   if (!habit) return res.status(404).json({ error: 'Habit not found.' });
 
-  const { name, goal, month } = req.body ?? {};
+  const { name, goal, fullMonth, month } = req.body ?? {};
 
   if (name !== undefined && !isNonEmptyString(name)) {
     return res.status(400).json({ error: 'name must be a non-empty string.' });
@@ -75,10 +83,13 @@ habitsRouter.patch('/:id', (req, res) => {
   if (goal !== undefined && (!isPositiveInt(goal) || !isValidMonth(month))) {
     return res.status(400).json({ error: 'goal (positive integer) and month (YYYY-MM) are required together.' });
   }
+  if (fullMonth !== undefined && (typeof fullMonth !== 'boolean' || !isValidMonth(month))) {
+    return res.status(400).json({ error: 'fullMonth (boolean) and month (YYYY-MM) are required together.' });
+  }
 
   db.transaction(() => {
     if (name !== undefined) updateHabitName.run(name.trim(), id);
-    if (goal !== undefined) setGoalForMonth(id, month, goal);
+    if (goal !== undefined || fullMonth !== undefined) setTargetForMonth(id, month, { goal, fullMonth });
   })();
 
   res.json({ ok: true });
