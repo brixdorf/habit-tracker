@@ -69,19 +69,17 @@ habitsRouter.patch('/:id', (req, res) => {
 
   const { name, goal, month } = req.body ?? {};
 
-  if (name !== undefined) {
-    if (!isNonEmptyString(name)) {
-      return res.status(400).json({ error: 'name must be a non-empty string.' });
-    }
-    updateHabitName.run(name.trim(), id);
+  if (name !== undefined && !isNonEmptyString(name)) {
+    return res.status(400).json({ error: 'name must be a non-empty string.' });
+  }
+  if (goal !== undefined && (!isPositiveInt(goal) || !isValidMonth(month))) {
+    return res.status(400).json({ error: 'goal (positive integer) and month (YYYY-MM) are required together.' });
   }
 
-  if (goal !== undefined) {
-    if (!isPositiveInt(goal) || typeof month !== 'string') {
-      return res.status(400).json({ error: 'goal (positive integer) and month are required together.' });
-    }
-    setGoalForMonth(id, month, goal);
-  }
+  db.transaction(() => {
+    if (name !== undefined) updateHabitName.run(name.trim(), id);
+    if (goal !== undefined) setGoalForMonth(id, month, goal);
+  })();
 
   res.json({ ok: true });
 });
