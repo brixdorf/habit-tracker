@@ -25,7 +25,7 @@ export function NotesPanel({ notes, onCreate, onSave, onDelete, onTogglePin, onR
 
   return (
     <section>
-      <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-base-500 dark:text-base-400">
+      <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-base-600 dark:text-base-400">
         Notes
       </h2>
 
@@ -47,14 +47,14 @@ export function NotesPanel({ notes, onCreate, onSave, onDelete, onTogglePin, onR
       </form>
 
       {notes.length === 0 ? (
-        <p className="rounded-lg border border-dashed border-base-300 bg-base-100/50 p-6 text-center text-sm text-base-500 dark:border-base-700 dark:bg-base-900/40 dark:text-base-400">
+        <p className="rounded-lg border border-dashed border-base-300 bg-base-100/50 p-6 text-center text-sm text-base-600 dark:border-base-700 dark:bg-base-900/40 dark:text-base-400">
           No notes for this month yet. Add one above to get started.
         </p>
       ) : (
         <div className="flex flex-col gap-4">
           {pinned.length > 0 && (
             <div>
-              <p className="mb-2 text-xs font-medium uppercase tracking-wide text-base-400 dark:text-base-500">
+              <p className="mb-2 text-xs font-medium uppercase tracking-wide text-base-600 dark:text-base-400">
                 Pinned
               </p>
               <NoteGroup

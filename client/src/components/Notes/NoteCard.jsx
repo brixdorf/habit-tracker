@@ -38,7 +38,7 @@ export function NoteCard({ note, onSave, onDelete, onTogglePin }) {
           {...attributes}
           {...listeners}
           aria-label="Drag to reorder"
-          className="mt-0.5 shrink-0 cursor-grab touch-none text-base-300 hover:text-base-500 active:cursor-grabbing dark:text-base-600 dark:hover:text-base-400"
+          className="mt-0.5 shrink-0 cursor-grab touch-none text-base-500 hover:text-base-700 active:cursor-grabbing dark:text-base-500 dark:hover:text-base-300"
         >
           <svg viewBox="0 0 24 24" className="h-4 w-4" fill="currentColor">
             <circle cx="9" cy="6" r="1.3" />
@@ -65,7 +65,7 @@ export function NoteCard({ note, onSave, onDelete, onTogglePin }) {
         )}
       </div>
 
-      <div className="flex items-center justify-end gap-1 text-base-400 dark:text-base-500">
+      <div className="flex items-center justify-end gap-1 text-base-500 dark:text-base-400">
         <button
           type="button"
           onClick={() => onTogglePin(!note.pinned)}

@@ -46,7 +46,7 @@ export function HabitGrid({
   if (habits.length === 0) {
     return (
       <div className="rounded-lg border border-dashed border-base-300 bg-base-100/50 p-10 text-center dark:border-base-700 dark:bg-base-900/40">
-        <p className="mb-4 text-base-500 dark:text-base-400">
+        <p className="mb-4 text-base-600 dark:text-base-400">
           No habits yet. Create your first habit by clicking on{' '}
           <span className="font-medium text-base-700 dark:text-base-200">+ New Habit</span>.
         </p>
@@ -95,7 +95,7 @@ export function HabitGrid({
                       key={date}
                       className={
                         'border-b border-base-200 py-2 text-center text-[10px] font-medium leading-tight text-base-500 dark:border-base-800 dark:text-base-400 ' +
-                        (isToday ? 'bg-accent-500/10 text-accent-600 dark:text-accent-500' : '')
+                        (isToday ? 'bg-accent-500/10 text-accent-600 dark:text-accent-400' : '')
                       }
                     >
                       <div>{weekdayAbbrev(date)}</div>

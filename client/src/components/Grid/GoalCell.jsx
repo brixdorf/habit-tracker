@@ -5,7 +5,7 @@ export function GoalCell({ goal, storedGoal, disabled, onSave }) {
   const [value, setValue] = useState(String(storedGoal));
 
   if (disabled) {
-    return <span className="text-base-400 dark:text-base-600">–</span>;
+    return <span className="text-base-500">–</span>;
   }
 
   if (editing) {

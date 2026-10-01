@@ -1,5 +1,5 @@
 const buttonClass =
-  'rounded p-1 text-base-400 hover:bg-base-200 hover:text-base-700 dark:text-base-500 dark:hover:bg-base-800 dark:hover:text-base-200';
+  'rounded p-1 text-base-500 hover:bg-base-200 hover:text-base-700 dark:text-base-500 dark:hover:bg-base-800 dark:hover:text-base-200';
 
 export function RowActions({ archived, onEdit, onArchive, onDelete }) {
   return (

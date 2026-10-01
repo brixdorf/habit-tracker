@@ -30,7 +30,7 @@ export function Modal({ title, children, onClose }) {
             type="button"
             onClick={onClose}
             aria-label="Close"
-            className="text-base-400 hover:text-base-700 dark:hover:text-base-200"
+            className="text-base-500 hover:text-base-700 dark:text-base-400 dark:hover:text-base-200"
           >
             ✕
           </button>

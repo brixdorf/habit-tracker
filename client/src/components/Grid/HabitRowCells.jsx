@@ -10,7 +10,7 @@ function DragHandle({ attributes, listeners, setActivatorNodeRef }) {
       {...attributes}
       {...listeners}
       aria-label="Drag to reorder"
-      className="cursor-grab touch-none text-base-300 hover:text-base-500 active:cursor-grabbing dark:text-base-600 dark:hover:text-base-400"
+      className="cursor-grab touch-none text-base-500 hover:text-base-700 active:cursor-grabbing dark:text-base-500 dark:hover:text-base-300"
     >
       <svg viewBox="0 0 24 24" className="h-4 w-4" fill="currentColor">
         <circle cx="9" cy="6" r="1.3" />
@@ -52,7 +52,7 @@ export function HabitRowCells({
           <span
             className={
               'min-w-0 flex-1 truncate text-sm ' +
-              (archived ? 'text-base-400 dark:text-base-500' : 'text-base-800 dark:text-base-100')
+              'text-base-800 dark:text-base-100'
             }
             title={habit.name}
           >
@@ -116,10 +116,10 @@ export function HabitRowCells({
           className={
             'inline-flex h-7 min-w-7 items-center justify-center rounded px-1.5 text-sm font-medium ' +
             (habit.fullyDisabled
-              ? 'text-base-400 dark:text-base-600'
+              ? 'text-base-500'
               : habit.achieved >= habit.goal
-                ? 'bg-success-500 text-white dark:bg-success-600'
-                : 'bg-warning-500 text-white dark:bg-warning-600')
+                ? 'bg-success-600 text-white'
+                : 'bg-warning-600 text-white')
           }
         >
           {habit.fullyDisabled ? '–' : habit.achieved}

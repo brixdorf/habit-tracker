@@ -8,7 +8,7 @@ export default function App() {
   if (loading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-base-50 dark:bg-base-950">
-        <p className="text-base-500 dark:text-base-400">Loading…</p>
+        <p className="text-base-600 dark:text-base-400">Loading…</p>
       </div>
     );
   }
