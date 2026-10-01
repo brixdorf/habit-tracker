@@ -87,3 +87,87 @@ describe('App', () => {
     expect(input).toHaveValue('Remember this');
   });
 });
+
+describe('Full Month habits in the grid', () => {
+  // Created on Oct 30, so October needs the 30th and 31st. The 5th was checked
+  // before Full Month was turned on; it is kept but doesn't count.
+  const fullMonthHabit = () =>
+    habit({
+      id: 7,
+      name: 'Meditate',
+      createdDate: '2026-10-30',
+      fullMonth: true,
+      startDate: '2026-10-30',
+      goal: 2,
+      storedGoal: 20,
+      achieved: 1,
+      checkedDates: ['2026-10-05', '2026-10-30'],
+    });
+
+  it('shows the required days as a fixed Full Month goal', async () => {
+    stubApi(loggedInRoutes({ 'GET /api/habits?month=2026-10': () => [fullMonthHabit()] }));
+    renderApp();
+
+    const goal = await screen.findByLabelText('Full Month: every day, 2 days this month');
+    expect(goal).toHaveTextContent('2');
+    expect(goal.tagName).not.toBe('BUTTON');
+  });
+
+  it('locks days before the habit started', async () => {
+    stubApi(loggedInRoutes({ 'GET /api/habits?month=2026-10': () => [fullMonthHabit()] }));
+    renderApp();
+
+    expect(await screen.findByRole('button', { name: 'Meditate on 2026-10-05, checked' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Meditate on 2026-10-29' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Meditate on 2026-10-31' })).toBeEnabled();
+  });
+
+  it('counts the month as achieved only once every required day is done', async () => {
+    stubApi(
+      loggedInRoutes({
+        'GET /api/habits?month=2026-10': () => [fullMonthHabit()],
+        'POST /api/habits/7/checks/2026-10-31/toggle': () => ({ checked: true }),
+      })
+    );
+    const user = userEvent.setup();
+    renderApp();
+
+    expect(await screen.findByLabelText('1 of 2 done')).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'Meditate on 2026-10-31' }));
+    expect(await screen.findByLabelText('2 of 2 done, goal met')).toBeInTheDocument();
+  });
+
+  it('sends the Full Month setting when creating and editing habits', async () => {
+    const requests = [];
+    stubApi(
+      loggedInRoutes({
+        'GET /api/habits?month=2026-10': () => [habit({ id: 3, name: 'Read', goal: 20, storedGoal: 20 })],
+        'POST /api/habits': (body) => {
+          requests.push(['POST', body]);
+          return jsonResponse(201, { id: 4 });
+        },
+        'PATCH /api/habits/3': (body) => {
+          requests.push(['PATCH', body]);
+          return { ok: true };
+        },
+      })
+    );
+    const user = userEvent.setup();
+    renderApp();
+
+    await user.click(await screen.findByRole('button', { name: '+ New Habit' }));
+    await user.type(screen.getByLabelText('Name'), 'Stretch');
+    await user.click(screen.getByRole('checkbox', { name: /full month/i }));
+    await user.click(screen.getByRole('button', { name: 'Create' }));
+
+    await user.click(await screen.findByRole('button', { name: 'Edit habit' }));
+    await user.click(screen.getByRole('checkbox', { name: /full month/i }));
+    await user.click(screen.getByRole('button', { name: 'Save' }));
+
+    await screen.findByText('Read');
+    expect(requests).toEqual([
+      ['POST', { name: 'Stretch', fullMonth: true }],
+      ['PATCH', { name: 'Read', goal: 20, fullMonth: true, month: '2026-10' }],
+    ]);
+  });
+});
