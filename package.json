@@ -12,5 +12,8 @@
     "build": "npm run build --workspace=client",
     "start": "npm run start --workspace=server",
     "test": "npm test --workspaces --if-present"
+  },
+  "engines": {
+    "node": ">=24"
   }
 }

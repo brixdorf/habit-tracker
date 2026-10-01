@@ -21,7 +21,7 @@ A single-user habit tracker web app. Track daily habits across months in a grid 
 
 ## Local setup
 
-Requires Node.js 20 or later.
+Requires Node.js 24 (the current LTS) or later.
 
 ```bash
 git clone https://github.com/brixdorf/habit-tracker.git
@@ -53,6 +53,14 @@ npm run dev:client   # starts the Vite dev server on port 5173, proxying API cal
 ```
 
 Open `http://localhost:5173`.
+
+## Tests
+
+```bash
+npm test   # runs the server API tests (node:test) and the client tests (Vitest)
+```
+
+The server tests use an in-memory SQLite database, so they never touch `server/data`.
 
 ## Production build
 
