@@ -154,8 +154,10 @@ describe('Full Month habits in the grid', () => {
     );
     const user = userEvent.setup();
     renderApp();
+    // Wait for the list, or the click lands on the empty-state button that it replaces.
+    await screen.findByText('Read');
 
-    await user.click(await screen.findByRole('button', { name: '+ New Habit' }));
+    await user.click(screen.getByRole('button', { name: '+ New Habit' }));
     await user.type(screen.getByLabelText('Name'), 'Stretch');
     await user.click(screen.getByRole('checkbox', { name: /full month/i }));
     await user.click(screen.getByRole('button', { name: 'Create' }));
