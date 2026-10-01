@@ -1,5 +1,5 @@
 import { db } from '../db.js';
-import { daysInMonth, dateMonth, compareMonth } from '../dateUtils.js';
+import { daysInMonth, dateMonth, compareMonth, currentMonthIST } from '../dateUtils.js';
 
 const selectHabitById = db.prepare('SELECT * FROM habits WHERE id = ?');
 
@@ -21,14 +21,28 @@ const selectCheckedDates = db.prepare(`
   SELECT date FROM checks WHERE habit_id = ? AND substr(date, 1, 7) = ? ORDER BY date ASC
 `);
 
-function materializeGoalForMonth(habitId, month, fallbackGoal) {
-  let row = selectGoalRow.get(habitId, month);
-  if (row) return row.goal;
+function resolveGoalForMonth(habitId, month, fallbackGoal) {
+  const row = selectGoalRow.get(habitId, month);
+  if (row) return { goal: row.goal, stored: true };
 
   const prior = selectLatestPriorGoal.get(habitId, month);
-  const goal = prior ? prior.goal : fallbackGoal;
-  insertGoalRow.run(habitId, month, goal);
+  return { goal: prior ? prior.goal : fallbackGoal, stored: false };
+}
+
+function materializeGoalForMonth(habitId, month, fallbackGoal) {
+  const { goal, stored } = resolveGoalForMonth(habitId, month, fallbackGoal);
+  if (!stored) insertGoalRow.run(habitId, month, goal);
   return goal;
+}
+
+// Months that have started get their inherited goal saved, so later edits to an
+// earlier month don't rewrite them. Future months only preview the inherited goal,
+// so they keep following changes until they actually begin.
+function goalForViewedMonth(habitId, month) {
+  if (compareMonth(month, currentMonthIST()) > 0) {
+    return resolveGoalForMonth(habitId, month, 0).goal;
+  }
+  return materializeGoalForMonth(habitId, month, 0);
 }
 
 export function computeProration(habit, month) {
@@ -45,7 +59,7 @@ export function getHabitsForMonth(month) {
   const rows = selectVisibleHabits.all(month, month);
 
   return rows.map((habit) => {
-    const storedGoal = materializeGoalForMonth(habit.id, month, 0);
+    const storedGoal = goalForViewedMonth(habit.id, month);
     const { activeDays, totalDays, fullyDisabled } = computeProration(habit, month);
 
     let goal = storedGoal;
