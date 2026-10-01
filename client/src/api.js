@@ -57,8 +57,8 @@ export const api = {
   getToday: () => request('/meta/today'),
 
   getHabits: (month) => request(`/habits?month=${encodeURIComponent(month)}`),
-  createHabit: (name, goal) =>
-    request('/habits', { method: 'POST', body: JSON.stringify({ name, goal }) }),
+  createHabit: (name, goal, fullMonth) =>
+    request('/habits', { method: 'POST', body: JSON.stringify({ name, goal, fullMonth }) }),
   updateHabit: (id, patch) =>
     request(`/habits/${id}`, { method: 'PATCH', body: JSON.stringify(patch) }),
   archiveHabit: (id) => request(`/habits/${id}/archive`, { method: 'POST' }),

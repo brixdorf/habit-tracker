@@ -64,7 +64,10 @@ export function HabitRowCells({
 
       {days.map((date) => {
         const isToday = isCurrentMonth && date === today;
-        const editable = !habit.fullyDisabled && (!habit.cutoffDate || date <= habit.cutoffDate);
+        const editable =
+          !habit.fullyDisabled &&
+          (!habit.startDate || date >= habit.startDate) &&
+          (!habit.cutoffDate || date <= habit.cutoffDate);
         const checked = checkedSet.has(date);
 
         return (
@@ -107,12 +110,18 @@ export function HabitRowCells({
         <GoalCell
           goal={habit.goal}
           storedGoal={habit.storedGoal}
+          fullMonth={habit.fullMonth}
           disabled={habit.fullyDisabled}
           onSave={(n) => onSaveGoal(n)}
         />
       </td>
       <td className="sticky right-0 z-10 w-11 border-b border-base-200 bg-base-50 p-0.5 text-center sm:w-14 dark:border-base-800 dark:bg-base-950">
         <span
+          aria-label={
+            habit.fullyDisabled
+              ? 'Not tracked this month'
+              : `${habit.achieved} of ${habit.goal} done${habit.achieved >= habit.goal ? ', goal met' : ''}`
+          }
           className={
             'inline-flex h-7 min-w-7 items-center justify-center rounded px-1.5 text-sm font-medium ' +
             (habit.fullyDisabled

@@ -73,7 +73,9 @@ export function Dashboard() {
         if (h.id !== habitId) return h;
         const checked = h.checkedDates.includes(date);
         const checkedDates = checked ? h.checkedDates.filter((d) => d !== date) : [...h.checkedDates, date];
-        return { ...h, checkedDates, achieved: checkedDates.length };
+        // Every clickable day counts toward the goal, but a Full Month habit can have
+        // checks from before it started that don't, so adjust the count rather than recount.
+        return { ...h, checkedDates, achieved: h.achieved + (checked ? -1 : 1) };
       })
     );
     try {
@@ -93,14 +95,14 @@ export function Dashboard() {
     }
   }
 
-  async function handleCreateHabit({ name, goal }) {
-    await api.createHabit(name, goal);
+  async function handleCreateHabit({ name, goal, fullMonth }) {
+    await api.createHabit(name, goal, fullMonth);
     setShowCreateHabit(false);
     refresh(month);
   }
 
-  async function handleEditHabit({ name, goal }) {
-    await api.updateHabit(editingHabit.id, { name, goal, month });
+  async function handleEditHabit({ name, goal, fullMonth }) {
+    await api.updateHabit(editingHabit.id, { name, goal, fullMonth, month });
     setEditingHabit(null);
     refresh(month);
   }
@@ -263,6 +265,7 @@ export function Dashboard() {
           mode="edit"
           initialName={editingHabit.name}
           initialGoal={editingHabit.storedGoal}
+          initialFullMonth={editingHabit.fullMonth}
           onSubmit={handleEditHabit}
           onClose={() => setEditingHabit(null)}
         />
