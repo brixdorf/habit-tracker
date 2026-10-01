@@ -18,8 +18,8 @@ const insertGoal = db.prepare('INSERT INTO habit_goals (habit_id, month, goal) V
 const updateHabitName = db.prepare('UPDATE habits SET name = ? WHERE id = ?');
 const archiveHabit = db.prepare('UPDATE habits SET archived_date = ? WHERE id = ?');
 const deleteHabit = db.prepare('DELETE FROM habits WHERE id = ?');
-const selectActiveHabitsOrdered = db.prepare(
-  'SELECT id FROM habits WHERE archived_date IS NULL ORDER BY position ASC'
+const selectAllHabitsOrdered = db.prepare(
+  'SELECT id, archived_date FROM habits ORDER BY position ASC, id ASC'
 );
 const updatePosition = db.prepare('UPDATE habits SET position = ? WHERE id = ?');
 
@@ -109,18 +109,26 @@ habitsRouter.patch('/reorder/all', (req, res) => {
     return res.status(400).json({ error: 'orderedIds must be an array of habit ids.' });
   }
 
-  const activeIds = new Set(selectActiveHabitsOrdered.all().map((r) => r.id));
+  const allHabits = selectAllHabitsOrdered.all();
+  const activeIds = new Set(allHabits.filter((h) => !h.archived_date).map((h) => h.id));
   const providedSet = new Set(orderedIds);
   if (
-    orderedIds.length !== activeIds.size ||
-    activeIds.size !== providedSet.size ||
-    [...activeIds].some((id) => !providedSet.has(id))
+    orderedIds.length === 0 ||
+    providedSet.size !== orderedIds.length ||
+    orderedIds.some((id) => !activeIds.has(id))
   ) {
-    return res.status(400).json({ error: 'orderedIds must contain exactly the active habit ids.' });
+    return res.status(400).json({ error: 'orderedIds must be distinct active habit ids.' });
   }
 
+  // The grid only sends the active habits it shows, which for a past month leaves out
+  // habits created later. The given habits swap among the slots they already hold, so
+  // hidden and archived habits keep their place. Every habit is then renumbered so
+  // positions stay unique.
+  let cursor = 0;
+  const nextOrder = allHabits.map((h) => (providedSet.has(h.id) ? orderedIds[cursor++] : h.id));
+
   const reorderTx = db.transaction(() => {
-    orderedIds.forEach((id, index) => {
+    nextOrder.forEach((id, index) => {
       updatePosition.run(index + 1, id);
     });
   });

@@ -7,7 +7,7 @@ const selectVisibleHabits = db.prepare(`
   SELECT * FROM habits
   WHERE substr(created_date, 1, 7) <= ?
     AND (archived_date IS NULL OR substr(archived_date, 1, 7) >= ?)
-  ORDER BY position ASC
+  ORDER BY position ASC, id ASC
 `);
 
 const selectGoalRow = db.prepare('SELECT * FROM habit_goals WHERE habit_id = ? AND month = ?');
