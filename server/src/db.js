@@ -4,12 +4,19 @@ import fs from 'node:fs';
 import { fileURLToPath } from 'node:url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const dataDir = path.join(__dirname, '..', 'data');
-if (!fs.existsSync(dataDir)) {
-  fs.mkdirSync(dataDir, { recursive: true });
+
+function resolveDbPath() {
+  // Tests run against a throwaway in-memory database instead of the real data file.
+  if (process.env.NODE_ENV === 'test') return ':memory:';
+
+  const dataDir = path.join(__dirname, '..', 'data');
+  if (!fs.existsSync(dataDir)) {
+    fs.mkdirSync(dataDir, { recursive: true });
+  }
+  return path.join(dataDir, 'habit-tracker.sqlite');
 }
 
-const dbPath = path.join(dataDir, 'habit-tracker.sqlite');
+const dbPath = resolveDbPath();
 console.log(`Using SQLite database at ${dbPath}`);
 export const db = new Database(dbPath);
 
